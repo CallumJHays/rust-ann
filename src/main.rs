@@ -24,11 +24,11 @@ fn main() {
     // the first having three nodes using Sigmoid activation and an initial bias of 0.5
     // the next having 10 nodes using Elu activation
     // the final (output) layer having 1 node and a pre-defined seed weight
-    let mut nn =
-        Network::new(3,
-                     vec![LayerBlueprint::new(4, Some(0.5), None, Some(Box::new(Sigmoid))),
-                          LayerBlueprint::new(10, None, None, Some(Box::new(Elu))),
-                          LayerBlueprint::new(1, None, Some(output_layer_seed_weights), None)]);
+    let mut nn = Network::new(3,
+                              vec![LayerBlueprint::new(4).bias(0.5).activator(Sigmoid),
+                                   LayerBlueprint::new(10).activator(Elu),
+                                   LayerBlueprint::new(1).weights(output_layer_seed_weights)]);
+
     // when `None` is specified, the most common defaults are used
     // IE xavier initialization for seed weights, uniform random for bias, Relu for activation.
     // This network is not suited for the task, but is just an example
@@ -51,7 +51,7 @@ fn main() {
         let mean_errors = errors.iter().sum::<f64>() / (errors.len() as f64);
 
         if i % 100 == 0 {
-            info!("{}: {}", i, mean_errors);
+            println!("{}: {}", i, mean_errors);
             learning_rate *= 0.9; // slow down learning every 100 steps
         }
     }

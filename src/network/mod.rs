@@ -16,24 +16,29 @@ pub struct LayerBlueprint {
 }
 
 impl LayerBlueprint {
-    pub fn new(num_nodes: usize,
-               seed_bias: Option<f64>,
-               seed_weights: Option<Vec<Vec<f64>>>,
-               activator: Option<Box<Activator>>)
-               -> Self {
-
-        assert!(num_nodes >= 1);
-
-        if let Some(seed_weights) = seed_weights.as_ref() {
-            assert_eq!(seed_weights.len(), num_nodes)
-        }
-
+    pub fn new(num_nodes: usize) -> Self {
         LayerBlueprint {
             num_nodes: num_nodes,
-            seed_bias: seed_bias,
-            seed_weights: seed_weights,
-            activator: activator.unwrap_or_else(|| Box::new(Relu)),
+            seed_bias: None,
+            seed_weights: None,
+            activator: Box::new(Relu),
         }
+    }
+
+    pub fn bias(mut self, bias: f64) -> Self {
+        self.seed_bias = Some(bias);
+        self
+    }
+
+    pub fn weights(mut self, weights: Vec<Vec<f64>>) -> Self {
+        assert_eq!(self.num_nodes, weights.len());
+        self.seed_weights = Some(weights);
+        self
+    }
+
+    pub fn activator<A: 'static + Activator>(mut self, activator: A) -> Self {
+        self.activator = Box::new(activator);
+        self
     }
 }
 
